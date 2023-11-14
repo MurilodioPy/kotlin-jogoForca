@@ -7,14 +7,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,13 +20,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -44,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -60,7 +57,7 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.secondary
                 ) {
                     ScaffoldTela()
                 }
@@ -69,45 +66,16 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun GreetingPreview() { //tela de preview do código
     JogoForcaTheme {
         ScaffoldTela()
     }
 }
 
 @Composable
-fun teste() {
-    Column(
-        Modifier
-            .height(350.dp)
-            .width(400.dp)
-    ) {
-        Box(
-            Modifier
-                .height(100.dp)
-                .fillMaxWidth()
-                .background(Color.DarkGray))
-        Image(painter = painterResource(id = R.drawable.teste),
-            contentDescription = "Descrição da imagem",
-            Modifier
-                .size(100.dp)
-                .offset(y = (-50).dp)
-        )
-    }
-}
-
-@Composable
-fun texto(text : String){
+fun Texto(text : String){
     Text(
         modifier = Modifier
             .fillMaxWidth()
@@ -124,7 +92,6 @@ fun TemaCard(nome: String) {
             .padding(horizontal = 8.dp, vertical = 8.dp)
             .fillMaxWidth()
             .clickable(onClick = {}) //Ir para a tela de jogo com o tema escolhido!
-
         ,
         shape = RoundedCornerShape(corner = CornerSize(16.dp)),
         colors = CardDefaults.cardColors(
@@ -133,7 +100,6 @@ fun TemaCard(nome: String) {
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.End
         ) {
             ImagemDoTema()
             Column {
@@ -165,10 +131,13 @@ private fun ImagemDoTema() { //id da imagem do tema como argumento!
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScaffoldTela() {
-    var presses by remember { mutableStateOf(0) }
     var listaDeTemas by remember { mutableStateOf(listOf<String>())}
-    listaDeTemas = listaDeTemas + "Esporte"
-    listaDeTemas = listaDeTemas + "Cidade"
+    listaDeTemas = listaDeTemas + "Esportes"
+    listaDeTemas = listaDeTemas + "Cidades"
+    listaDeTemas = listaDeTemas + "Países"
+    listaDeTemas = listaDeTemas + "Animais"
+    listaDeTemas = listaDeTemas + "Frutas"
+    listaDeTemas = listaDeTemas + "Objetos"
 
     Scaffold(
         topBar = {
@@ -177,27 +146,37 @@ fun ScaffoldTela() {
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onSecondary
+                    actionIconContentColor = MaterialTheme.colorScheme.onSecondary,
                 ),
                 title = {
-                    texto("Jogo Forca")
-                }
+                    Texto("Jogo da Forca")
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Menu,
+                            contentDescription = "Menu"
+                        )
+                    }
+                },
             )
         },
         bottomBar = {
             BottomAppBar(
                 containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
-            ) { texto("ADS - IFTM") }
-        }
-        ,
-        floatingActionButton = {
-            FloatingActionButton(onClick = {
-                presses++
-//                listaDeTemas = listaDeTemas + "Filmes"
-            }) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
-
+            ) {
+                Texto("ADS - IFTM")
             }
         }
     ) { innerPadding ->
@@ -207,32 +186,13 @@ fun ScaffoldTela() {
                 .background(MaterialTheme.colorScheme.secondary)
                 .fillMaxHeight()
                 ,
-
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-//            teste()
-//            Text(
-//                modifier =
-//                Modifier
-//                    .padding(8.dp)
-//                    ,
-//
-//                text =
-//                """
-//                    You have pressed the floating action button $presses times.
-//                """.trimIndent()
-//                    ,
-//                color = MaterialTheme.colorScheme.onPrimary,
-//            )
             LazyColumn {
                 items(listaDeTemas) { tema ->
                     TemaCard(tema)
                 }
-                //Text("ID: ${pessoa.id}, Nome: ${pessoa.nome}")
             }
-
-
-
         }
     }
 }
