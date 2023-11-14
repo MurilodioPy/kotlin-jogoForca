@@ -1,4 +1,4 @@
-package br.com.murilodio.jogoforca
+package br.com.ads.jogoforca
 
 import org.junit.Test
 
