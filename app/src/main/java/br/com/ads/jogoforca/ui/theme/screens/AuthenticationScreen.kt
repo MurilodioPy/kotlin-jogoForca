@@ -27,7 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import br.com.ads.jogoforca.ui.theme.JogoForcaTheme
+import br.com.ads.jogoforca.ui.theme.screens.ui.theme.JogoForcaTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

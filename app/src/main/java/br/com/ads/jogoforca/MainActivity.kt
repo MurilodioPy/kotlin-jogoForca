@@ -13,12 +13,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import br.com.ads.jogoforca.model.Tema
 import br.com.ads.jogoforca.navigation.AppDestination
-import br.com.ads.jogoforca.ui.theme.JogoForcaTheme
 import br.com.ads.jogoforca.ui.theme.screens.AuthenticationScreen
-import br.com.ads.jogoforca.ui.theme.screens.GameScreen
+import br.com.ads.jogoforca.ui.theme.screens.GameScreens
 import br.com.ads.jogoforca.ui.theme.screens.ProfileScreen
 import br.com.ads.jogoforca.ui.theme.screens.TemasScreen
+import br.com.ads.jogoforca.ui.theme.screens.ui.theme.JogoForcaTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,48 +28,50 @@ class MainActivity : ComponentActivity() {
 //            var daoTema : DAOTema
 //            daoTema = DAOTema(applicationContext)
 //            daoTema.inserirTemas()
-
-            val navController = rememberNavController()
             JogoForcaTheme {
                 // A surface container using the 'background' color from the theme
-
-
-
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NavHost(
-                        navController = navController,
-                        startDestination = AppDestination.Temas.route+"/{user}"
-                    ) {
-                        composable(AppDestination.Temas.route+"/{user}") {entry ->
-                            entry.arguments?.getString("user")?.let{ user ->
-                                TemasScreen(
-                                        user = user
-                                    )
-                            } ?: LaunchedEffect(null){
-                                navController.navigate(AppDestination.Authentication.route)
-                            }
-                        }
-                        composable(AppDestination.Authentication.route) {
-                            AuthenticationScreen(
-                                onEnterClick = { user ->
-                                    navController.navigate(AppDestination.Temas.route+"/${user}")
-                                }
-                            )
-                        }
-                        composable(AppDestination.Game.route) {
-                            GameScreen(1)
-                        }
-                        composable(AppDestination.Profile.route) {
-                            ProfileScreen()
-                        }
-
+                    MyApp{
+                        startActivity(GameScreens.newIntent(this, it))
                     }
-
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun MyApp(navigateToProfile : (Tema) -> Unit){
+    val navController = rememberNavController()
+    NavHost(
+        navController = navController,
+        startDestination = AppDestination.Temas.route+"/{user}"
+    ) {
+        composable(AppDestination.Temas.route+"/{user}") { entry ->
+            entry.arguments?.getString("user")?.let{ user ->
+                TemasScreen(
+                    user = user
+                    , navigateToProfile = navigateToProfile
+                )
+            } ?: LaunchedEffect(null){
+                navController.navigate(AppDestination.Authentication.route)
+            }
+        }
+        composable(AppDestination.Authentication.route) {
+            AuthenticationScreen(
+                onEnterClick = { user ->
+                    navController.navigate(AppDestination.Temas.route+"/${user}")
+                }
+            )
+        }
+        composable(AppDestination.Game.route) {
+//            GameScreen(navController)
+        }
+        composable(AppDestination.Profile.route) {
+            ProfileScreen()
         }
     }
 }
@@ -76,7 +79,7 @@ class MainActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview3() {
-    br.com.ads.jogoforca.ui.theme.screens.ui.theme.JogoForcaTheme {
+    JogoForcaTheme {
 
     }
 }

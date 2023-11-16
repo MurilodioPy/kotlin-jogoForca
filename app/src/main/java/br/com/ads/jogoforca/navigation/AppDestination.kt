@@ -7,21 +7,3 @@ sealed class AppDestination(val route: String) {
     object Authentication : AppDestination("authentication")
     object UserRegistration : AppDestination("userRegistration")
 }
-
-//val bottomAppBarItems = listOf(
-//    BottomAppBarItem(
-//        label = "Destaques",
-//        icon = Icons.Filled.AutoAwesome,
-//        destination = AppDestination.Highlight
-//    ),
-//    BottomAppBarItem(
-//        label = "Menu",
-//        icon = Icons.Filled.RestaurantMenu,
-//        destination = AppDestination.Menu
-//    ),
-//    BottomAppBarItem(
-//        label = "Bebidas",
-//        icon = Icons.Outlined.LocalBar,
-//        destination = AppDestination.Drinks
-//    ),
-//)

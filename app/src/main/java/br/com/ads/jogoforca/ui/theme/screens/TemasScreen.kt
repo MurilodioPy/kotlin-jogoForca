@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
@@ -30,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,8 +40,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import br.com.ads.jogoforca.R
 import br.com.ads.jogoforca.model.Tema
+import br.com.ads.jogoforca.sampledata.DataProvider.temas
+import br.com.ads.jogoforca.ui.theme.screens.ui.theme.JogoForcaTheme
 
 @Composable
 fun Texto(text : String){
@@ -57,14 +56,12 @@ fun Texto(text : String){
 }
 
 @Composable
-fun TemaCard(nome: String, id: Int, onItemSelected: () -> Unit) {
+fun TemaCard(tema: Tema, navigateToProfile : (Tema) -> Unit) {
     Card(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)
             .fillMaxWidth()
-            .clickable(onClick = {
-                onItemSelected()
-            }) //Ir para a tela de jogo com o tema escolhido!
+            .clickable{navigateToProfile(tema)}
         ,
         shape = RoundedCornerShape(corner = CornerSize(16.dp)),
         colors = CardDefaults.cardColors(
@@ -74,28 +71,36 @@ fun TemaCard(nome: String, id: Int, onItemSelected: () -> Unit) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            ImagemDoTema()
+            ImagemDoTema(tema)
             Column {
                 Text(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .width(210.dp)
                         .padding(15.dp)
                     ,
                     color = MaterialTheme.colorScheme.onPrimary,
-                    text = nome,
+                    text = tema.nome.toString(),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
-            Text(text = id.toString())
+            Text(
+                modifier = Modifier
+                    .padding(15.dp)
+                ,
+                color = MaterialTheme.colorScheme.onPrimary,
+                text = tema.listaPalavras?.size.toString(),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
 
 @Composable
-private fun ImagemDoTema() { //id da imagem do tema como argumento!
+private fun ImagemDoTema(tema : Tema) { //id da imagem do tema como argumento!
     Image(
-        painter = painterResource(R.drawable.image),
+        painter = painterResource(tema.imagem),
         contentDescription = null,
         contentScale = ContentScale.Crop,
         modifier = Modifier
@@ -107,25 +112,8 @@ private fun ImagemDoTema() { //id da imagem do tema como argumento!
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TemasScreen(user : String) {
-
-    val tema1 = Tema(1,"Esportes",listOf("futebol", "basquete", "tênis", "natação", "ciclismo", "handebol", "vôlei", "rugby", "beisebol", "hóquei no gelo", "atletismo", "ginástica", "boxe", "luta livre", "golfe", "surfe", "mergulho", "vela", "remo", "canoagem", "esqui", "snowboard", "patinação no gelo", "curling", "bobsleigh", "caratê", "judô", "taekwondo", "aikido", "kung fu", "escalada", "montanhismo", "rapel", "paraquedismo", "balonismo", "League of Legends", "Counter-Strike: Global Offensive", "Dota 2", "Fortnite", "FIFA", "atletismo paralímpico", "natação paralímpica", "basquete em cadeira de rodas", "tênis em cadeira de rodas", "bocha"), 1)
-    val tema2 = Tema(2,"Cidades",listOf("Nova York", "Paris", "Tóquio", "Londres", "Rio de Janeiro", "Washington D.C.", "Berlim", "Roma", "Madrid", "Moscou", "Atenas", "Jerusalém", "Cairo", "Machu Picchu", "Barcelona", "Veneza", "Amsterdã", "Istambul", "Cidade do México", "Queenstown", "Kyoto", "Vancouver", "Reykjavik", "Ushuaia", "Cusco", "Chichén Itzá", "Tikal", "Angkor Wat", "Lyon", "São Paulo", "Tóquio", "Nova Orleans", "Taipé", "Berlim", "Barcelona", "Londres"), 2)
-    val tema3 = Tema(3,"Países",listOf("Brasil", "Estados Unidos", "China", "Índia", "Rússia", "Argentina", "México", "Chile", "Colômbia", "Peru", "Alemanha", "França", "Reino Unido", "Itália", "Espanha", "Nigéria", "Egito", "África do Sul", "Argélia", "Marrocos", "Japão", "Coréia do Sul", "Indonésia", "Turquia", "Paquistão", "Austrália", "Nova Zelândia", "Papua Nova Guiné", "Fiji", "Israel", "Vaticano", "Japão", "Arábia Saudita", "China"), 3)
-    val tema4 = Tema(4,"Animais",listOf("leão", "elefante", "girafa", "panda", "tigre", "gorila", "chimpanzé", "rinoceronte", "hipopótamo", "lobo", "águia", "falcão", "papagaio", "tucano", "beija-flor", "cobra", "lagartixa", "tartaruga", "jacaré", "crocodilo", "sapo", "rã", "salamandra", "tubarão", "baleia", "golfinho", "salmão", "atum", "panda gigante", "tigre siberiano", "orangotango", "gorila das montanhas", "rinoceronte branco", "canguru", "camelo", "panda vermelho", "elefante africano", "pinguim imperador", "coruja", "morcego", "gambá", "raposa"), 4)
-    val tema5 = Tema(5,"Frutas",listOf("maçã", "banana", "uva", "morango", "abacaxi", "laranja", "limão", "tangerina", "abacaxi", "kiwi", "morango", "framboesa", "cereja", "amora", "goiaba", "manga", "abacaxi", "maracujá", "coco", "cupuaçu", "graviola", "jabuticaba", "cajá", "caju", "uva-passa", "ameixa", "damasco", "figo", "tâmara"), 5)
-    val tema6 = Tema(6,"Objetos",listOf("computador", "livro", "chave", "copo", "cadeira", "cama", "mesa", "sofá", "fogão", "impressora", "caneta", "papel", "telefone", "prato", "copo", "talheres", "panela", "frigideira", "escova de dentes", "pasta de dente", "sabonete", "shampoo", "condicionador", "calça", "camisa", "sapato", "meia", "chapéu", "relógio", "óculos", "chave", "carteira", "celular", "televisão", "smartphone", "tablet", "videogame", "drone", "pintura", "escultura", "música", "dança", "teatro", "bola", "chuteira", "raquete", "bicicleta", "skate", "martelo", "prego", "furadeira", "serra", "chave de fenda"), 6)
-
-    val temas = arrayListOf(
-        tema1,
-        tema2,
-        tema3,
-        tema4,
-        tema5,
-        tema6
-    )
-
-
+fun TemasScreen(user : String, navigateToProfile : (Tema) -> Unit) {
+    val temas = remember {temas}
     Scaffold(
         topBar = {
             TopAppBar(
@@ -138,17 +126,9 @@ fun TemasScreen(user : String) {
                 title = {
                     Texto("Jogo da Forca")
                 },
-                navigationIcon = {
-                    IconButton(onClick = {
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
                 actions = {
                     IconButton(onClick = {
+                        TODO("IMPLEMENTAR AÇÃO MENU")
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Menu,
@@ -175,18 +155,9 @@ fun TemasScreen(user : String) {
             ,
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            // Save the selected item using rememberSavedInstanceState
-            var selectedItem = remember { mutableStateOf(0) }
-
             LazyColumn {
                 items(temas) { tema ->
-                    TemaCard(
-                        tema.nome,
-                        tema.id,
-                        onItemSelected  = {
-                            selectedItem.value = tema.id
-                        }
-                    )
+                    TemaCard(tema, navigateToProfile)
                 }
             }
         }
@@ -196,7 +167,7 @@ fun TemasScreen(user : String) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() { //tela de preview do código
-    br.com.ads.jogoforca.ui.theme.JogoForcaTheme {
-        TemasScreen("Murilo Dii")
+    JogoForcaTheme {
+//        TemasScreen("Murilo Dio", navigateToProfile)
     }
 }
