@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "74496454239",
+    "firebase_url": "https://pj-firebase-200e3-default-rtdb.firebaseio.com",
+    "project_id": "pj-firebase-200e3",
+    "storage_bucket": "pj-firebase-200e3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:74496454239:android:0a567636bf3a39fd90b5ea",
+        "android_client_info": {
+          "package_name": "br.com.ads.jogoforca"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrUzWJfrfYQgcZ-w8xbH8ar75_YPFPkJ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:74496454239:android:8b3c6e43ee34c68190b5ea",
+        "android_client_info": {
+          "package_name": "com.example.pj_firebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrUzWJfrfYQgcZ-w8xbH8ar75_YPFPkJ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
