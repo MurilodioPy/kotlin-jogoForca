@@ -37,12 +37,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.ads.jogoforca.model.Tema
 import br.com.ads.jogoforca.sampledata.DataProvider.temas
-import br.com.ads.jogoforca.ui.theme.screens.ui.theme.JogoForcaTheme
 
 @Composable
 fun Texto(text : String){
@@ -112,7 +110,7 @@ private fun ImagemDoTema(tema : Tema) { //id da imagem do tema como argumento!
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TemasScreen(user : String, navigateToProfile : (Tema) -> Unit) {
+fun TemasScreen(user : String, navigateToGame : (Tema) -> Unit) {
     val temas = remember {temas}
     Scaffold(
         topBar = {
@@ -157,17 +155,9 @@ fun TemasScreen(user : String, navigateToProfile : (Tema) -> Unit) {
         ) {
             LazyColumn {
                 items(temas) { tema ->
-                    TemaCard(tema, navigateToProfile)
+                    TemaCard(tema, navigateToGame)
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() { //tela de preview do código
-    JogoForcaTheme {
-//        TemasScreen("Murilo Dio", navigateToProfile)
     }
 }

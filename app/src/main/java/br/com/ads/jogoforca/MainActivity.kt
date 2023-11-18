@@ -54,7 +54,7 @@ fun MyApp(navigateToProfile : (Tema) -> Unit){
             entry.arguments?.getString("user")?.let{ user ->
                 TemasScreen(
                     user = user
-                    , navigateToProfile = navigateToProfile
+                    , navigateToGame = navigateToProfile
                 )
             } ?: LaunchedEffect(null){
                 navController.navigate(AppDestination.Authentication.route)

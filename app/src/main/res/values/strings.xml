@@ -47,4 +47,7 @@
     <string name="title_activity_login">Login</string>
     <string name="title_activity_temas">Temas</string>
     <string name="title_activity_game_screens">GameScreens</string>
+    <string name="userPlaceHolder">User</string>
+    <string name="passwordPlaceHolder">Password</string>
+    <string name="placeHolderLetter">Digite uma letra</string>
 </resources>

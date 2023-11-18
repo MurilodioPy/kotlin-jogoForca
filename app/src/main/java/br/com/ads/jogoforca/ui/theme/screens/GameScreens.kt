@@ -3,6 +3,7 @@ package br.com.ads.jogoforca.ui.theme.screens
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
@@ -11,6 +12,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,6 +22,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -35,20 +39,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
+import br.com.ads.jogoforca.R
 import br.com.ads.jogoforca.model.Tema
 import br.com.ads.jogoforca.sampledata.DataProvider
 import br.com.ads.jogoforca.ui.theme.screens.ui.theme.JogoForcaTheme
+import java.text.Normalizer
 
 class GameScreens : ComponentActivity() {
 
@@ -59,7 +67,6 @@ class GameScreens : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             JogoForcaTheme {
-                val navController = rememberNavController()
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -82,6 +89,7 @@ class GameScreens : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GameScreen(tema: Tema) {
+    var count by remember { mutableStateOf(6) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -92,7 +100,27 @@ fun GameScreen(tema: Tema) {
                     actionIconContentColor = MaterialTheme.colorScheme.onSecondary,
                 ),
                 title = {
-                    Texto("Jogo da Forca Tema ${tema.nome}" )
+                    Texto("Tema ${tema.nome}" )
+                },
+                actions = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        IconButton(onClick = { count++ }) {
+                            Icon(Icons.Filled.Favorite,
+                                tint = Color.Red,
+                                contentDescription = "Vidas",
+                                modifier = Modifier
+                                    .size(40.dp)
+                            )
+                        }
+                        Text(
+                            text = count.toString(),
+                            fontSize = 25.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = {
@@ -140,12 +168,18 @@ fun GameScreen(tema: Tema) {
                 )
             }
             val chosenWord = remember { tema.listaPalavras?.random().toString()}
-            val wordLength = chosenWord.length
+            val cleanChosenWord = removeAccents(chosenWord)
+            var displayViewWord = ""
+            var display : ArrayList<String> = ArrayList()
 
-
-            var letra by remember {
-                mutableStateOf("")
+            cleanChosenWord.forEachIndexed { index, c ->
+                if (c.isLetter()){
+                    display.add(index, "-")
+                }else{
+                    display.add(index, " ")
+                }
             }
+            displayViewWord = display.joinToString(" ")
 
             val fieldsModifier = Modifier
                 .padding(
@@ -154,17 +188,19 @@ fun GameScreen(tema: Tema) {
                 )
                 .fillMaxWidth()
 
+            Log.i("TST1", displayViewWord)
             Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp),
-                    textAlign = TextAlign.Center,
-                    text = chosenWord.uppercase(),
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                textAlign = TextAlign.Center,
+                text = "Palavra: $displayViewWord \nResposta: $chosenWord",
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+            var isLetterEmpty by rememberSaveable { mutableStateOf(false) }
+            var letra by remember { mutableStateOf("") }
             TextField(
                 value = letra,
                 onValueChange = {
@@ -172,12 +208,49 @@ fun GameScreen(tema: Tema) {
                 },
                 fieldsModifier,
                 placeholder = {
-                    Text(text = "Letra")
-                }
+                    Text(text = stringResource(id = R.string.placeHolderLetter))
+                },
+                trailingIcon = {
+                    if(isLetterEmpty){
+                        Icon(
+                            imageVector = Icons.Filled.Info,
+                            contentDescription = "Error",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
+                },
+                isError = isLetterEmpty
             )
+            if(isLetterEmpty){
+                Text(
+                    text = "Digite uma letra",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+            var isLetterCorrect by rememberSaveable { mutableStateOf(false) }
             Button(
                 onClick = {
-
+                    if(letra.isNotEmpty()){
+//                        val newDisplay = display.toMutableList()
+                        cleanChosenWord.forEachIndexed { index, c ->
+                            if (c.isLetter()){
+                                if(letra.equals(c.toString(), ignoreCase = true)){
+                                    display.removeAt(index)
+                                    display.add(index, c.toString())
+                                    isLetterCorrect = true
+                                }
+                            }
+                        }
+                        displayViewWord = display.joinToString(" ")
+                        if (!isLetterCorrect){
+                            count -= 1
+                        }
+                    }else{
+                        isLetterEmpty = true
+                    }
+                    isLetterCorrect = false
+                    Log.i("TST2", displayViewWord)
                 },
                 Modifier
                     .padding(
@@ -193,12 +266,16 @@ fun GameScreen(tema: Tema) {
     }
 }
 
+fun removeAccents(input: String): String {
+    val decomposed = Normalizer.normalize(input, Normalizer.Form.NFD)
+    return decomposed.replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
+}
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview2() {
     JogoForcaTheme {
-        val tema = DataProvider.tema1
+        val tema = DataProvider.tema5
         GameScreen(tema)
     }
 }
