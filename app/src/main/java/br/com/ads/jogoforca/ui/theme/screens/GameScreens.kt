@@ -124,6 +124,7 @@ fun GameScreen(tema: Tema) {
                 },
                 navigationIcon = {
                     IconButton(onClick = {
+
                     }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,

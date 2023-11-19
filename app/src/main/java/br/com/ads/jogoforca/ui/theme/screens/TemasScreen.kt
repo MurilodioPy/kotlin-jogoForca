@@ -54,12 +54,12 @@ fun Texto(text : String){
 }
 
 @Composable
-fun TemaCard(tema: Tema, navigateToProfile : (Tema) -> Unit) {
+fun TemaCard(tema: Tema, navigateToGame : (Tema) -> Unit) {
     Card(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)
             .fillMaxWidth()
-            .clickable{navigateToProfile(tema)}
+            .clickable{navigateToGame(tema)}
         ,
         shape = RoundedCornerShape(corner = CornerSize(16.dp)),
         colors = CardDefaults.cardColors(
