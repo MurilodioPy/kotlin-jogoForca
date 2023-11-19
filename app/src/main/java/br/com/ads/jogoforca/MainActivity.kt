@@ -13,10 +13,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import br.com.ads.jogoforca.model.Tema
 import br.com.ads.jogoforca.navigation.AppDestination
 import br.com.ads.jogoforca.ui.theme.screens.AuthenticationScreen
-import br.com.ads.jogoforca.ui.theme.screens.GameScreens
+import br.com.ads.jogoforca.ui.theme.screens.GameScreen
 import br.com.ads.jogoforca.ui.theme.screens.ProfileScreen
 import br.com.ads.jogoforca.ui.theme.screens.TemasScreen
 import br.com.ads.jogoforca.ui.theme.screens.ui.theme.JogoForcaTheme
@@ -34,9 +33,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MyApp{
-                        startActivity(GameScreens.newIntent(this, it))
-                    }
+                    MyApp()
                 }
             }
         }
@@ -44,7 +41,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MyApp(navigateToProfile : (Tema) -> Unit){
+fun MyApp(){
     val navController = rememberNavController()
     NavHost(
         navController = navController,
@@ -53,8 +50,8 @@ fun MyApp(navigateToProfile : (Tema) -> Unit){
         composable(AppDestination.Temas.route+"/{user}") { entry ->
             entry.arguments?.getString("user")?.let{ user ->
                 TemasScreen(
-                    user = user
-                    , navigateToGame = navigateToProfile
+                    user = user,
+                    navController
                 )
             } ?: LaunchedEffect(null){
                 navController.navigate(AppDestination.Authentication.route)
@@ -67,8 +64,10 @@ fun MyApp(navigateToProfile : (Tema) -> Unit){
                 }
             )
         }
-        composable(AppDestination.Game.route) {
-//            GameScreen(navController)
+        composable(AppDestination.Game.route+"/{id}") { entry ->
+            entry.arguments?.getString("id")?.let{id ->
+                GameScreen(id, navController)
+            }
         }
         composable(AppDestination.Profile.route) {
             ProfileScreen()
