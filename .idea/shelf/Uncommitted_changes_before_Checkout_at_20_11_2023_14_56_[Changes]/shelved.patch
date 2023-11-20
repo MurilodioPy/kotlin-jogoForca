@@ -1,0 +1,326 @@
+Index: app/src/main/java/br/com/ads/jogoforca/ui/theme/screens/GameScreens.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package br.com.ads.jogoforca.ui.theme.screens\r\n\r\nimport android.content.Context\r\nimport android.content.Intent\r\nimport android.os.Bundle\r\nimport android.util.Log\r\nimport androidx.activity.ComponentActivity\r\nimport androidx.activity.compose.setContent\r\nimport androidx.compose.foundation.BorderStroke\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.border\r\nimport androidx.compose.foundation.layout.Box\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Row\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.layout.size\r\nimport androidx.compose.foundation.rememberScrollState\r\nimport androidx.compose.foundation.shape.CircleShape\r\nimport androidx.compose.foundation.verticalScroll\r\nimport androidx.compose.material.icons.Icons\r\nimport androidx.compose.material.icons.filled.ArrowBack\r\nimport androidx.compose.material.icons.filled.Favorite\r\nimport androidx.compose.material.icons.filled.Info\r\nimport androidx.compose.material3.Button\r\nimport androidx.compose.material3.ExperimentalMaterial3Api\r\nimport androidx.compose.material3.Icon\r\nimport androidx.compose.material3.IconButton\r\nimport androidx.compose.material3.MaterialTheme\r\nimport androidx.compose.material3.Scaffold\r\nimport androidx.compose.material3.Surface\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.material3.TextField\r\nimport androidx.compose.material3.TopAppBar\r\nimport androidx.compose.material3.TopAppBarDefaults\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.runtime.saveable.rememberSaveable\r\nimport androidx.compose.runtime.setValue\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.draw.clip\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.res.stringResource\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.text.style.TextAlign\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport br.com.ads.jogoforca.R\r\nimport br.com.ads.jogoforca.model.Tema\r\nimport br.com.ads.jogoforca.sampledata.DataProvider\r\nimport br.com.ads.jogoforca.ui.theme.screens.ui.theme.JogoForcaTheme\r\nimport java.text.Normalizer\r\n\r\nclass GameScreens : ComponentActivity() {\r\n\r\n    private val tema : Tema by lazy {\r\n        intent?.getSerializableExtra(TEMA_ID) as Tema\r\n    }\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        setContent {\r\n            JogoForcaTheme {\r\n                Surface(\r\n                    modifier = Modifier.fillMaxSize(),\r\n                    color = MaterialTheme.colorScheme.background\r\n                ) {\r\n                    GameScreen(tema)\r\n                }\r\n            }\r\n        }\r\n    }\r\n\r\n    companion object {\r\n        private const val TEMA_ID = \"tema_id\"\r\n        fun newIntent(context: Context, tema : Tema) =\r\n            Intent(context, GameScreens::class.java).apply {\r\n                putExtra(TEMA_ID, tema)\r\n            }\r\n    }\r\n}\r\n\r\n@OptIn(ExperimentalMaterial3Api::class)\r\n@Composable\r\nfun GameScreen(tema: Tema) {\r\n    var count by remember { mutableStateOf(6) }\r\n    Scaffold(\r\n        topBar = {\r\n            TopAppBar(\r\n                colors = TopAppBarDefaults.topAppBarColors(\r\n                    containerColor = MaterialTheme.colorScheme.primary,\r\n                    titleContentColor = MaterialTheme.colorScheme.onPrimary,\r\n                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,\r\n                    actionIconContentColor = MaterialTheme.colorScheme.onSecondary,\r\n                ),\r\n                title = {\r\n                    Texto(\"Tema ${tema.nome}\" )\r\n                },\r\n                actions = {\r\n                    Row(\r\n                        verticalAlignment = Alignment.CenterVertically,\r\n                        modifier = Modifier.padding(8.dp)\r\n                    ) {\r\n                        IconButton(onClick = { count++ }) {\r\n                            Icon(Icons.Filled.Favorite,\r\n                                tint = Color.Red,\r\n                                contentDescription = \"Vidas\",\r\n                                modifier = Modifier\r\n                                    .size(40.dp)\r\n                            )\r\n                        }\r\n                        Text(\r\n                            text = count.toString(),\r\n                            fontSize = 25.sp,\r\n                            fontWeight = FontWeight.Bold,\r\n                        )\r\n                    }\r\n                },\r\n                navigationIcon = {\r\n                    IconButton(onClick = {\r\n\r\n                    }) {\r\n                        Icon(\r\n                            imageVector = Icons.Filled.ArrowBack,\r\n                            contentDescription = \"Back\"\r\n                        )\r\n                    }\r\n                }\r\n            )\r\n        }\r\n    ) { innerPadding ->\r\n        Column(\r\n            Modifier\r\n                .fillMaxSize()\r\n                .padding(innerPadding)\r\n                .background(MaterialTheme.colorScheme.secondary)\r\n                .verticalScroll(rememberScrollState()),\r\n            horizontalAlignment = Alignment.CenterHorizontally\r\n        ) {\r\n            Box(\r\n                modifier = Modifier\r\n                    .padding(\r\n                        vertical = 64.dp,\r\n                        horizontal = 16.dp\r\n                    )\r\n                    .size(200.dp)\r\n                    .background(\r\n                        MaterialTheme.colorScheme.primary,\r\n                        shape = CircleShape,\r\n                    )\r\n            ) {\r\n                val borderWidth = 4.dp\r\n                Image(\r\n                    painter = painterResource(tema.imagem),\r\n                    contentDescription = \"Imagem do tema\",\r\n                    modifier = Modifier\r\n                        .fillMaxWidth()\r\n                        .border(\r\n                            BorderStroke(borderWidth, MaterialTheme.colorScheme.primary),\r\n                            CircleShape\r\n                        )\r\n                        .clip(CircleShape)\r\n                )\r\n            }\r\n            val chosenWord = remember { tema.listaPalavras?.random().toString()}\r\n            val cleanChosenWord = removeAccents(chosenWord)\r\n            var displayViewWord = \"\"\r\n            var display : ArrayList<String> = ArrayList()\r\n\r\n            cleanChosenWord.forEachIndexed { index, c ->\r\n                if (c.isLetter()){\r\n                    display.add(index, \"-\")\r\n                }else{\r\n                    display.add(index, \" \")\r\n                }\r\n            }\r\n            displayViewWord = display.joinToString(\" \")\r\n\r\n            val fieldsModifier = Modifier\r\n                .padding(\r\n                    horizontal = 16.dp,\r\n                    vertical = 8.dp,\r\n                )\r\n                .fillMaxWidth()\r\n\r\n            Log.i(\"TST1\", displayViewWord)\r\n            Text(\r\n                modifier = Modifier\r\n                    .fillMaxWidth()\r\n                    .padding(20.dp),\r\n                textAlign = TextAlign.Center,\r\n                text = \"Palavra: $displayViewWord \\nResposta: $chosenWord\",\r\n                fontSize = 25.sp,\r\n                fontWeight = FontWeight.Bold,\r\n                color = MaterialTheme.colorScheme.onPrimary\r\n            )\r\n            var isLetterEmpty by rememberSaveable { mutableStateOf(false) }\r\n            var letra by remember { mutableStateOf(\"\") }\r\n            TextField(\r\n                value = letra,\r\n                onValueChange = {\r\n                    letra = it\r\n                },\r\n                fieldsModifier,\r\n                placeholder = {\r\n                    Text(text = stringResource(id = R.string.placeHolderLetter))\r\n                },\r\n                trailingIcon = {\r\n                    if(isLetterEmpty){\r\n                        Icon(\r\n                            imageVector = Icons.Filled.Info,\r\n                            contentDescription = \"Error\",\r\n                            tint = MaterialTheme.colorScheme.error\r\n                        )\r\n                    }\r\n                },\r\n                isError = isLetterEmpty\r\n            )\r\n            if(isLetterEmpty){\r\n                Text(\r\n                    text = \"Digite uma letra\",\r\n                    color = MaterialTheme.colorScheme.error,\r\n                    style = MaterialTheme.typography.bodySmall\r\n                )\r\n            }\r\n            var isLetterCorrect by rememberSaveable { mutableStateOf(false) }\r\n            Button(\r\n                onClick = {\r\n                    if(letra.isNotEmpty()){\r\n//                        val newDisplay = display.toMutableList()\r\n                        cleanChosenWord.forEachIndexed { index, c ->\r\n                            if (c.isLetter()){\r\n                                if(letra.equals(c.toString(), ignoreCase = true)){\r\n                                    display.removeAt(index)\r\n                                    display.add(index, c.toString())\r\n                                    isLetterCorrect = true\r\n                                }\r\n                            }\r\n                        }\r\n                        displayViewWord = display.joinToString(\" \")\r\n                        if (!isLetterCorrect){\r\n                            count -= 1\r\n                        }\r\n                    }else{\r\n                        isLetterEmpty = true\r\n                    }\r\n                    isLetterCorrect = false\r\n                    Log.i(\"TST2\", displayViewWord)\r\n                },\r\n                Modifier\r\n                    .padding(\r\n                        top = 8.dp,\r\n                        start = 16.dp,\r\n                        end = 16.dp,\r\n                    )\r\n                    .fillMaxWidth(),\r\n            ) {\r\n                Text(text = \"Enter\")\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\nfun removeAccents(input: String): String {\r\n    val decomposed = Normalizer.normalize(input, Normalizer.Form.NFD)\r\n    return decomposed.replace(\"\\\\p{InCombiningDiacriticalMarks}+\".toRegex(), \"\")\r\n}\r\n\r\n@Preview(showBackground = true)\r\n@Composable\r\nfun GreetingPreview2() {\r\n    JogoForcaTheme {\r\n        val tema = DataProvider.tema5\r\n        GameScreen(tema)\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/br/com/ads/jogoforca/ui/theme/screens/GameScreens.kt b/app/src/main/java/br/com/ads/jogoforca/ui/theme/screens/GameScreens.kt
+--- a/app/src/main/java/br/com/ads/jogoforca/ui/theme/screens/GameScreens.kt	(revision ed99cd33c72ff427e7eb420d1d3a15cafbe2371d)
++++ b/app/src/main/java/br/com/ads/jogoforca/ui/theme/screens/GameScreens.kt	(date 1700502993213)
+@@ -1,11 +1,6 @@
+ package br.com.ads.jogoforca.ui.theme.screens
+ 
+-import android.content.Context
+-import android.content.Intent
+-import android.os.Bundle
+ import android.util.Log
+-import androidx.activity.ComponentActivity
+-import androidx.activity.compose.setContent
+ import androidx.compose.foundation.BorderStroke
+ import androidx.compose.foundation.Image
+ import androidx.compose.foundation.background
+@@ -30,7 +25,6 @@
+ import androidx.compose.material3.IconButton
+ import androidx.compose.material3.MaterialTheme
+ import androidx.compose.material3.Scaffold
+-import androidx.compose.material3.Surface
+ import androidx.compose.material3.Text
+ import androidx.compose.material3.TextField
+ import androidx.compose.material3.TopAppBar
+@@ -52,44 +46,22 @@
+ import androidx.compose.ui.tooling.preview.Preview
+ import androidx.compose.ui.unit.dp
+ import androidx.compose.ui.unit.sp
++import androidx.navigation.NavHostController
++import androidx.navigation.compose.rememberNavController
+ import br.com.ads.jogoforca.R
+-import br.com.ads.jogoforca.model.Tema
+ import br.com.ads.jogoforca.sampledata.DataProvider
+ import br.com.ads.jogoforca.ui.theme.screens.ui.theme.JogoForcaTheme
+ import java.text.Normalizer
+ 
+-class GameScreens : ComponentActivity() {
+-
+-    private val tema : Tema by lazy {
+-        intent?.getSerializableExtra(TEMA_ID) as Tema
+-    }
+-    override fun onCreate(savedInstanceState: Bundle?) {
+-        super.onCreate(savedInstanceState)
+-        setContent {
+-            JogoForcaTheme {
+-                Surface(
+-                    modifier = Modifier.fillMaxSize(),
+-                    color = MaterialTheme.colorScheme.background
+-                ) {
+-                    GameScreen(tema)
+-                }
+-            }
+-        }
+-    }
+-
+-    companion object {
+-        private const val TEMA_ID = "tema_id"
+-        fun newIntent(context: Context, tema : Tema) =
+-            Intent(context, GameScreens::class.java).apply {
+-                putExtra(TEMA_ID, tema)
+-            }
+-    }
+-}
+-
+ @OptIn(ExperimentalMaterial3Api::class)
+ @Composable
+-fun GameScreen(tema: Tema) {
++fun GameScreen(
++    id : String,
++    navController: NavHostController
++) {
+     var count by remember { mutableStateOf(6) }
++    val temas = DataProvider.temas
++    val tema = temas[id.toInt() - 1]
+     Scaffold(
+         topBar = {
+             TopAppBar(
+@@ -124,7 +96,6 @@
+                 },
+                 navigationIcon = {
+                     IconButton(onClick = {
+-
+                     }) {
+                         Icon(
+                             imageVector = Icons.Filled.ArrowBack,
+@@ -276,7 +247,8 @@
+ @Composable
+ fun GreetingPreview2() {
+     JogoForcaTheme {
++        val navController = rememberNavController()
+         val tema = DataProvider.tema5
+-        GameScreen(tema)
++        GameScreen(tema.id.toString(), navController)
+     }
+ }
+\ No newline at end of file
+Index: app/src/main/java/br/com/ads/jogoforca/ui/theme/screens/TemasScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package br.com.ads.jogoforca.ui.theme.screens\r\n\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Row\r\nimport androidx.compose.foundation.layout.fillMaxHeight\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.layout.size\r\nimport androidx.compose.foundation.layout.width\r\nimport androidx.compose.foundation.lazy.LazyColumn\r\nimport androidx.compose.foundation.lazy.items\r\nimport androidx.compose.foundation.shape.CornerSize\r\nimport androidx.compose.foundation.shape.RoundedCornerShape\r\nimport androidx.compose.material.icons.Icons\r\nimport androidx.compose.material.icons.filled.Menu\r\nimport androidx.compose.material3.BottomAppBar\r\nimport androidx.compose.material3.Card\r\nimport androidx.compose.material3.CardDefaults\r\nimport androidx.compose.material3.ExperimentalMaterial3Api\r\nimport androidx.compose.material3.Icon\r\nimport androidx.compose.material3.IconButton\r\nimport androidx.compose.material3.MaterialTheme\r\nimport androidx.compose.material3.Scaffold\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.material3.TopAppBar\r\nimport androidx.compose.material3.TopAppBarDefaults\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.draw.clip\r\nimport androidx.compose.ui.layout.ContentScale\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.text.style.TextAlign\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport br.com.ads.jogoforca.model.Tema\r\nimport br.com.ads.jogoforca.sampledata.DataProvider.temas\r\n\r\n@Composable\r\nfun Texto(text : String){\r\n    Text(\r\n        modifier = Modifier\r\n            .fillMaxWidth()\r\n            .width(34.dp),\r\n        textAlign = TextAlign.Center,\r\n        text = text\r\n    )\r\n}\r\n\r\n@Composable\r\nfun TemaCard(tema: Tema, navigateToGame : (Tema) -> Unit) {\r\n    Card(\r\n        modifier = Modifier\r\n            .padding(horizontal = 8.dp, vertical = 8.dp)\r\n            .fillMaxWidth()\r\n            .clickable{navigateToGame(tema)}\r\n        ,\r\n        shape = RoundedCornerShape(corner = CornerSize(16.dp)),\r\n        colors = CardDefaults.cardColors(\r\n            containerColor = MaterialTheme.colorScheme.primary,\r\n        )\r\n    ) {\r\n        Row(\r\n            verticalAlignment = Alignment.CenterVertically,\r\n        ) {\r\n            ImagemDoTema(tema)\r\n            Column {\r\n                Text(\r\n                    modifier = Modifier\r\n                        .width(210.dp)\r\n                        .padding(15.dp)\r\n                    ,\r\n                    color = MaterialTheme.colorScheme.onPrimary,\r\n                    text = tema.nome.toString(),\r\n                    fontSize = 20.sp,\r\n                    fontWeight = FontWeight.Bold\r\n                )\r\n            }\r\n            Text(\r\n                modifier = Modifier\r\n                    .padding(15.dp)\r\n                ,\r\n                color = MaterialTheme.colorScheme.onPrimary,\r\n                text = tema.listaPalavras?.size.toString(),\r\n                fontSize = 20.sp,\r\n                fontWeight = FontWeight.Bold\r\n            )\r\n        }\r\n    }\r\n}\r\n\r\n@Composable\r\nprivate fun ImagemDoTema(tema : Tema) { //id da imagem do tema como argumento!\r\n    Image(\r\n        painter = painterResource(tema.imagem),\r\n        contentDescription = null,\r\n        contentScale = ContentScale.Crop,\r\n        modifier = Modifier\r\n            .padding(8.dp)\r\n            .size(84.dp)\r\n            .clip(RoundedCornerShape(corner = CornerSize(16.dp)))\r\n    )\r\n}\r\n\r\n@OptIn(ExperimentalMaterial3Api::class)\r\n@Composable\r\nfun TemasScreen(user : String, navigateToGame : (Tema) -> Unit) {\r\n    val temas = remember {temas}\r\n    Scaffold(\r\n        topBar = {\r\n            TopAppBar(\r\n                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(\r\n                    containerColor = MaterialTheme.colorScheme.primary,\r\n                    titleContentColor = MaterialTheme.colorScheme.onPrimary,\r\n                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,\r\n                    actionIconContentColor = MaterialTheme.colorScheme.onSecondary,\r\n                ),\r\n                title = {\r\n                    Texto(\"Jogo da Forca\")\r\n                },\r\n                actions = {\r\n                    IconButton(onClick = {\r\n                        TODO(\"IMPLEMENTAR AÇÃO MENU\")\r\n                    }) {\r\n                        Icon(\r\n                            imageVector = Icons.Filled.Menu,\r\n                            contentDescription = \"Menu\"\r\n                        )\r\n                    }\r\n                },\r\n            )\r\n        },\r\n        bottomBar = {\r\n            BottomAppBar(\r\n                containerColor = MaterialTheme.colorScheme.secondary,\r\n                contentColor = MaterialTheme.colorScheme.onPrimary,\r\n            ) {\r\n                Texto(user.uppercase().split(\" \").first() + \" - ADS - IFTM - 2023\")\r\n            }\r\n        }\r\n    ) { innerPadding ->\r\n        Column(\r\n            modifier = Modifier\r\n                .padding(innerPadding)\r\n                .background(MaterialTheme.colorScheme.secondary)\r\n                .fillMaxHeight()\r\n            ,\r\n            verticalArrangement = Arrangement.spacedBy(16.dp),\r\n        ) {\r\n            LazyColumn {\r\n                items(temas) { tema ->\r\n                    TemaCard(tema, navigateToGame)\r\n                }\r\n            }\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/br/com/ads/jogoforca/ui/theme/screens/TemasScreen.kt b/app/src/main/java/br/com/ads/jogoforca/ui/theme/screens/TemasScreen.kt
+--- a/app/src/main/java/br/com/ads/jogoforca/ui/theme/screens/TemasScreen.kt	(revision ed99cd33c72ff427e7eb420d1d3a15cafbe2371d)
++++ b/app/src/main/java/br/com/ads/jogoforca/ui/theme/screens/TemasScreen.kt	(date 1700502808338)
+@@ -39,7 +39,9 @@
+ import androidx.compose.ui.text.style.TextAlign
+ import androidx.compose.ui.unit.dp
+ import androidx.compose.ui.unit.sp
++import androidx.navigation.NavHostController
+ import br.com.ads.jogoforca.model.Tema
++import br.com.ads.jogoforca.navigation.AppDestination
+ import br.com.ads.jogoforca.sampledata.DataProvider.temas
+ 
+ @Composable
+@@ -54,12 +56,14 @@
+ }
+ 
+ @Composable
+-fun TemaCard(tema: Tema, navigateToGame : (Tema) -> Unit) {
++fun TemaCard(tema: Tema, navController: NavHostController) {
+     Card(
+         modifier = Modifier
+             .padding(horizontal = 8.dp, vertical = 8.dp)
+             .fillMaxWidth()
+-            .clickable{navigateToGame(tema)}
++            .clickable{
++                navController.navigate(AppDestination.Game.route+"/${tema.id}")
++            }
+         ,
+         shape = RoundedCornerShape(corner = CornerSize(16.dp)),
+         colors = CardDefaults.cardColors(
+@@ -110,7 +114,7 @@
+ 
+ @OptIn(ExperimentalMaterial3Api::class)
+ @Composable
+-fun TemasScreen(user : String, navigateToGame : (Tema) -> Unit) {
++fun TemasScreen(user: String, navController: NavHostController) {
+     val temas = remember {temas}
+     Scaffold(
+         topBar = {
+@@ -155,7 +159,7 @@
+         ) {
+             LazyColumn {
+                 items(temas) { tema ->
+-                    TemaCard(tema, navigateToGame)
++                    TemaCard(tema, navController)
+                 }
+             }
+         }
+Index: app/src/main/java/br/com/ads/jogoforca/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package br.com.ads.jogoforca\r\n\r\nimport android.os.Bundle\r\nimport androidx.activity.ComponentActivity\r\nimport androidx.activity.compose.setContent\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.material3.MaterialTheme\r\nimport androidx.compose.material3.Surface\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.LaunchedEffect\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.navigation.compose.NavHost\r\nimport androidx.navigation.compose.composable\r\nimport androidx.navigation.compose.rememberNavController\r\nimport br.com.ads.jogoforca.model.Tema\r\nimport br.com.ads.jogoforca.navigation.AppDestination\r\nimport br.com.ads.jogoforca.ui.theme.screens.AuthenticationScreen\r\nimport br.com.ads.jogoforca.ui.theme.screens.GameScreens\r\nimport br.com.ads.jogoforca.ui.theme.screens.ProfileScreen\r\nimport br.com.ads.jogoforca.ui.theme.screens.TemasScreen\r\nimport br.com.ads.jogoforca.ui.theme.screens.ui.theme.JogoForcaTheme\r\n\r\nclass MainActivity : ComponentActivity() {\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        setContent {\r\n//            var daoTema : DAOTema\r\n//            daoTema = DAOTema(applicationContext)\r\n//            daoTema.inserirTemas()\r\n            JogoForcaTheme {\r\n                // A surface container using the 'background' color from the theme\r\n                Surface(\r\n                    modifier = Modifier.fillMaxSize(),\r\n                    color = MaterialTheme.colorScheme.background\r\n                ) {\r\n                    MyApp{\r\n                        startActivity(GameScreens.newIntent(this, it))\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n@Composable\r\nfun MyApp(navigateToProfile : (Tema) -> Unit){\r\n    val navController = rememberNavController()\r\n    NavHost(\r\n        navController = navController,\r\n        startDestination = AppDestination.Temas.route+\"/{user}\"\r\n    ) {\r\n        composable(AppDestination.Temas.route+\"/{user}\") { entry ->\r\n            entry.arguments?.getString(\"user\")?.let{ user ->\r\n                TemasScreen(\r\n                    user = user\r\n                    , navigateToGame = navigateToProfile\r\n                )\r\n            } ?: LaunchedEffect(null){\r\n                navController.navigate(AppDestination.Authentication.route)\r\n            }\r\n        }\r\n        composable(AppDestination.Authentication.route) {\r\n            AuthenticationScreen(\r\n                onEnterClick = { user ->\r\n                    navController.navigate(AppDestination.Temas.route+\"/${user}\")\r\n                }\r\n            )\r\n        }\r\n        composable(AppDestination.Game.route) {\r\n//            GameScreen(navController)\r\n        }\r\n        composable(AppDestination.Profile.route) {\r\n            ProfileScreen()\r\n        }\r\n    }\r\n}\r\n\r\n@Preview(showBackground = true)\r\n@Composable\r\nfun GreetingPreview3() {\r\n    JogoForcaTheme {\r\n\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/br/com/ads/jogoforca/MainActivity.kt b/app/src/main/java/br/com/ads/jogoforca/MainActivity.kt
+--- a/app/src/main/java/br/com/ads/jogoforca/MainActivity.kt	(revision ed99cd33c72ff427e7eb420d1d3a15cafbe2371d)
++++ b/app/src/main/java/br/com/ads/jogoforca/MainActivity.kt	(date 1700502526150)
+@@ -8,18 +8,23 @@
+ import androidx.compose.material3.Surface
+ import androidx.compose.runtime.Composable
+ import androidx.compose.runtime.LaunchedEffect
++import androidx.compose.runtime.getValue
++import androidx.compose.runtime.mutableStateOf
++import androidx.compose.runtime.remember
++import androidx.compose.runtime.setValue
+ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.tooling.preview.Preview
+ import androidx.navigation.compose.NavHost
+ import androidx.navigation.compose.composable
+ import androidx.navigation.compose.rememberNavController
+-import br.com.ads.jogoforca.model.Tema
+ import br.com.ads.jogoforca.navigation.AppDestination
+ import br.com.ads.jogoforca.ui.theme.screens.AuthenticationScreen
+-import br.com.ads.jogoforca.ui.theme.screens.GameScreens
++import br.com.ads.jogoforca.ui.theme.screens.GameScreen
+ import br.com.ads.jogoforca.ui.theme.screens.ProfileScreen
++import br.com.ads.jogoforca.ui.theme.screens.SplashScreen
+ import br.com.ads.jogoforca.ui.theme.screens.TemasScreen
+ import br.com.ads.jogoforca.ui.theme.screens.ui.theme.JogoForcaTheme
++import kotlinx.coroutines.delay
+ 
+ class MainActivity : ComponentActivity() {
+     override fun onCreate(savedInstanceState: Bundle?) {
+@@ -29,13 +34,21 @@
+ //            daoTema = DAOTema(applicationContext)
+ //            daoTema.inserirTemas()
+             JogoForcaTheme {
++                var splashScreenVisible by remember { mutableStateOf(true) }
++
++                LaunchedEffect(Unit) {
++                    delay(3000) // Aguarda por 3 segundos (ajuste conforme necessário)
++                    splashScreenVisible = false
++                }
+                 // A surface container using the 'background' color from the theme
+                 Surface(
+                     modifier = Modifier.fillMaxSize(),
+                     color = MaterialTheme.colorScheme.background
+                 ) {
+-                    MyApp{
+-                        startActivity(GameScreens.newIntent(this, it))
++                    if (splashScreenVisible) {
++                        SplashScreen()
++                    } else {
++                        MyApp()
+                     }
+                 }
+             }
+@@ -44,7 +57,7 @@
+ }
+ 
+ @Composable
+-fun MyApp(navigateToProfile : (Tema) -> Unit){
++fun MyApp(){
+     val navController = rememberNavController()
+     NavHost(
+         navController = navController,
+@@ -53,8 +66,8 @@
+         composable(AppDestination.Temas.route+"/{user}") { entry ->
+             entry.arguments?.getString("user")?.let{ user ->
+                 TemasScreen(
+-                    user = user
+-                    , navigateToGame = navigateToProfile
++                    user = user,
++                    navController
+                 )
+             } ?: LaunchedEffect(null){
+                 navController.navigate(AppDestination.Authentication.route)
+@@ -67,8 +80,10 @@
+                 }
+             )
+         }
+-        composable(AppDestination.Game.route) {
+-//            GameScreen(navController)
++        composable(AppDestination.Game.route+"/{id}") { entry ->
++            entry.arguments?.getString("id")?.let{id ->
++                GameScreen(id, navController)
++            }
+         }
+         composable(AppDestination.Profile.route) {
+             ProfileScreen()
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\">\r\n\r\n    <application\r\n        android:allowBackup=\"true\"\r\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\r\n        android:fullBackupContent=\"@xml/backup_rules\"\r\n        android:icon=\"@mipmap/ic_launcher\"\r\n        android:label=\"@string/app_name\"\r\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\r\n        android:supportsRtl=\"true\"\r\n        android:theme=\"@style/Theme.JogoForca\"\r\n        tools:targetApi=\"31\">\r\n        <activity\r\n            android:name=\".ui.theme.screens.GameScreens\"\r\n            android:exported=\"false\"\r\n            android:label=\"@string/title_activity_game_screens\"\r\n            android:theme=\"@style/Theme.JogoForca\" />\r\n        <activity\r\n            android:name=\".ui.theme.screens.Temas\"\r\n            android:exported=\"false\"\r\n            android:label=\"@string/title_activity_temas\"\r\n            android:theme=\"@style/Theme.JogoForca\" />\r\n        <activity\r\n            android:name=\".ui.theme.screens.Login\"\r\n            android:exported=\"false\"\r\n            android:label=\"@string/title_activity_login\"\r\n            android:theme=\"@style/Theme.JogoForca\" />\r\n        <activity\r\n            android:name=\".ui.theme.screens.Profile\"\r\n            android:exported=\"false\"\r\n            android:label=\"@string/title_activity_profile\"\r\n            android:theme=\"@style/Theme.JogoForca\" />\r\n        <activity\r\n            android:name=\".ui.theme.screens.Game\"\r\n            android:exported=\"false\"\r\n            android:label=\"@string/title_activity_game\"\r\n            android:theme=\"@style/Theme.JogoForca\" />\r\n        <activity\r\n            android:name=\".MainActivity\"\r\n            android:exported=\"true\"\r\n            android:label=\"@string/app_name\"\r\n            android:theme=\"@style/Theme.JogoForca\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n        </activity>\r\n    </application>\r\n\r\n</manifest>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+--- a/app/src/main/AndroidManifest.xml	(revision ed99cd33c72ff427e7eb420d1d3a15cafbe2371d)
++++ b/app/src/main/AndroidManifest.xml	(date 1700502526148)
+@@ -48,6 +48,7 @@
+                 <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
+         </activity>
++<!--        <activity android:name=".MainActivity" android:exported="false" />-->
+     </application>
+ 
+ </manifest>
+\ No newline at end of file
+Index: app/src/main/java/br/com/ads/jogoforca/ui/theme/screens/SplashScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/br/com/ads/jogoforca/ui/theme/screens/SplashScreen.kt b/app/src/main/java/br/com/ads/jogoforca/ui/theme/screens/SplashScreen.kt
+new file mode 100644
+--- /dev/null	(date 1700502526153)
++++ b/app/src/main/java/br/com/ads/jogoforca/ui/theme/screens/SplashScreen.kt	(date 1700502526153)
+@@ -0,0 +1,46 @@
++package br.com.ads.jogoforca.ui.theme.screens
++
++import androidx.compose.foundation.Image
++import androidx.compose.foundation.background
++import androidx.compose.foundation.layout.Arrangement
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.Spacer
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.foundation.layout.height
++import androidx.compose.foundation.layout.padding
++import androidx.compose.foundation.layout.size
++import androidx.compose.material3.MaterialTheme
++import androidx.compose.material3.Text
++import androidx.compose.runtime.Composable
++import androidx.compose.ui.Alignment
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.draw.scale
++import androidx.compose.ui.res.painterResource
++import androidx.compose.ui.unit.dp
++import br.com.ads.jogoforca.R
++
++@Composable
++fun SplashScreen() {
++    Column(
++        modifier = Modifier
++            .fillMaxSize()
++            .padding(16.dp)
++            .background(MaterialTheme.colorScheme.tertiary),
++        horizontalAlignment = Alignment.CenterHorizontally,
++        verticalArrangement = Arrangement.Center
++    ) {
++        // Você pode substituir a imagem abaixo pelo seu próprio recurso
++        Image(
++            painter = painterResource(id = R.drawable.ic_launcher_foreground),
++            contentDescription = null,
++            modifier = Modifier
++                .size(100.dp)
++                .background(color = MaterialTheme.colorScheme.secondary, shape = MaterialTheme.shapes.medium)
++                .padding(16.dp)
++                .scale(1.5f)
++        )
++        Spacer(modifier = Modifier.height(16.dp))
++        // Adicione qualquer texto ou elemento adicional que você deseja exibir
++        Text(text = "Bem-vindo ao Jogo da Forca", style = MaterialTheme.typography.bodyLarge)
++    }
++}
+\ No newline at end of file
