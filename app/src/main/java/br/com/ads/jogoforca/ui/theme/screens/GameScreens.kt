@@ -1,11 +1,6 @@
 package br.com.ads.jogoforca.ui.theme.screens
 
-import android.content.Context
-import android.content.Intent
-import android.os.Bundle
 import android.util.Log
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,9 +23,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
@@ -52,44 +47,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import br.com.ads.jogoforca.R
-import br.com.ads.jogoforca.model.Tema
 import br.com.ads.jogoforca.sampledata.DataProvider
 import br.com.ads.jogoforca.ui.theme.screens.ui.theme.JogoForcaTheme
 import java.text.Normalizer
 
-class GameScreens : ComponentActivity() {
-
-    private val tema : Tema by lazy {
-        intent?.getSerializableExtra(TEMA_ID) as Tema
-    }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            JogoForcaTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    GameScreen(tema)
-                }
-            }
-        }
-    }
-
-    companion object {
-        private const val TEMA_ID = "tema_id"
-        fun newIntent(context: Context, tema : Tema) =
-            Intent(context, GameScreens::class.java).apply {
-                putExtra(TEMA_ID, tema)
-            }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GameScreen(tema: Tema) {
+fun GameScreen(
+    id : String,
+    navController: NavHostController
+) {
     var count by remember { mutableStateOf(6) }
+    val temas = DataProvider.temas
+    val tema = temas[id.toInt() - 1]
     Scaffold(
         topBar = {
             TopAppBar(
@@ -124,7 +97,7 @@ fun GameScreen(tema: Tema) {
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-
+                        navController.popBackStack()
                     }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
@@ -170,17 +143,22 @@ fun GameScreen(tema: Tema) {
             }
             val chosenWord = remember { tema.listaPalavras?.random().toString()}
             val cleanChosenWord = removeAccents(chosenWord)
-            var displayViewWord = ""
-            var display : ArrayList<String> = ArrayList()
+            var displayViewWord by remember { mutableStateOf("") }
+            var display = remember { ArrayList<String>() }
+            var isFirstTime by remember { mutableStateOf(true) }
 
-            cleanChosenWord.forEachIndexed { index, c ->
-                if (c.isLetter()){
-                    display.add(index, "-")
-                }else{
-                    display.add(index, " ")
+            if (isFirstTime){
+                cleanChosenWord.forEachIndexed { index, c ->
+                    if (c.isLetter()){
+                        display.add(index, "-")
+                    }else{
+                        display.add(index, " ")
+                    }
                 }
+
+                displayViewWord = display.joinToString(" ")
+                isFirstTime = false
             }
-            displayViewWord = display.joinToString(" ")
 
             val fieldsModifier = Modifier
                 .padding(
@@ -195,7 +173,7 @@ fun GameScreen(tema: Tema) {
                     .fillMaxWidth()
                     .padding(20.dp),
                 textAlign = TextAlign.Center,
-                text = "Palavra: $displayViewWord \nResposta: $chosenWord",
+                text = displayViewWord,
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimary
@@ -207,9 +185,12 @@ fun GameScreen(tema: Tema) {
                 onValueChange = {
                     letra = it
                 },
-                fieldsModifier,
+                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+                modifier = fieldsModifier,
                 placeholder = {
-                    Text(text = stringResource(id = R.string.placeHolderLetter))
+                    Text(text = stringResource(id = R.string.placeHolderLetter),
+                        modifier = Modifier
+                    )
                 },
                 trailingIcon = {
                     if(isLetterEmpty){
@@ -230,10 +211,10 @@ fun GameScreen(tema: Tema) {
                 )
             }
             var isLetterCorrect by rememberSaveable { mutableStateOf(false) }
+            Log.i("TST5", display.toString())
             Button(
                 onClick = {
                     if(letra.isNotEmpty()){
-//                        val newDisplay = display.toMutableList()
                         cleanChosenWord.forEachIndexed { index, c ->
                             if (c.isLetter()){
                                 if(letra.equals(c.toString(), ignoreCase = true)){
@@ -245,12 +226,16 @@ fun GameScreen(tema: Tema) {
                         }
                         displayViewWord = display.joinToString(" ")
                         if (!isLetterCorrect){
-                            count -= 1
+                            count--
                         }
                     }else{
                         isLetterEmpty = true
                     }
+                    if (!display.contains("-")){
+                        displayViewWord = chosenWord
+                    }
                     isLetterCorrect = false
+                    Log.i("TST4", display.toString())
                     Log.i("TST2", displayViewWord)
                 },
                 Modifier
@@ -276,7 +261,8 @@ fun removeAccents(input: String): String {
 @Composable
 fun GreetingPreview2() {
     JogoForcaTheme {
+        val navController = rememberNavController()
         val tema = DataProvider.tema5
-        GameScreen(tema)
+        GameScreen(tema.id.toString(), navController)
     }
 }

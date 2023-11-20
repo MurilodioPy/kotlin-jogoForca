@@ -39,7 +39,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import br.com.ads.jogoforca.model.Tema
+import br.com.ads.jogoforca.navigation.AppDestination
 import br.com.ads.jogoforca.sampledata.DataProvider.temas
 
 @Composable
@@ -54,12 +56,14 @@ fun Texto(text : String){
 }
 
 @Composable
-fun TemaCard(tema: Tema, navigateToGame : (Tema) -> Unit) {
+fun TemaCard(tema: Tema, navController: NavHostController) {
     Card(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)
             .fillMaxWidth()
-            .clickable{navigateToGame(tema)}
+            .clickable{
+                navController.navigate(AppDestination.Game.route+"/${tema.id}")
+            }
         ,
         shape = RoundedCornerShape(corner = CornerSize(16.dp)),
         colors = CardDefaults.cardColors(
@@ -110,7 +114,7 @@ private fun ImagemDoTema(tema : Tema) { //id da imagem do tema como argumento!
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TemasScreen(user : String, navigateToGame : (Tema) -> Unit) {
+fun TemasScreen(user: String, navController: NavHostController) {
     val temas = remember {temas}
     Scaffold(
         topBar = {
@@ -155,7 +159,7 @@ fun TemasScreen(user : String, navigateToGame : (Tema) -> Unit) {
         ) {
             LazyColumn {
                 items(temas) { tema ->
-                    TemaCard(tema, navigateToGame)
+                    TemaCard(tema, navController)
                 }
             }
         }
