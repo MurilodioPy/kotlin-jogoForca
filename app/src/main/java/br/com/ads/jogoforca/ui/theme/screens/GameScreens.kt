@@ -23,6 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -142,17 +143,22 @@ fun GameScreen(
             }
             val chosenWord = remember { tema.listaPalavras?.random().toString()}
             val cleanChosenWord = removeAccents(chosenWord)
-            var displayViewWord = ""
-            var display : ArrayList<String> = ArrayList()
+            var displayViewWord by remember { mutableStateOf("") }
+            var display = remember { ArrayList<String>() }
+            var isFirstTime by remember { mutableStateOf(true) }
 
-            cleanChosenWord.forEachIndexed { index, c ->
-                if (c.isLetter()){
-                    display.add(index, "-")
-                }else{
-                    display.add(index, " ")
+            if (isFirstTime){
+                cleanChosenWord.forEachIndexed { index, c ->
+                    if (c.isLetter()){
+                        display.add(index, "-")
+                    }else{
+                        display.add(index, " ")
+                    }
                 }
+
+                displayViewWord = display.joinToString(" ")
+                isFirstTime = false
             }
-            displayViewWord = display.joinToString(" ")
 
             val fieldsModifier = Modifier
                 .padding(
@@ -167,7 +173,7 @@ fun GameScreen(
                     .fillMaxWidth()
                     .padding(20.dp),
                 textAlign = TextAlign.Center,
-                text = "Palavra: $displayViewWord \nResposta: $chosenWord",
+                text = displayViewWord,
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimary
@@ -179,9 +185,12 @@ fun GameScreen(
                 onValueChange = {
                     letra = it
                 },
-                fieldsModifier,
+                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+                modifier = fieldsModifier,
                 placeholder = {
-                    Text(text = stringResource(id = R.string.placeHolderLetter))
+                    Text(text = stringResource(id = R.string.placeHolderLetter),
+                        modifier = Modifier
+                    )
                 },
                 trailingIcon = {
                     if(isLetterEmpty){
@@ -202,10 +211,10 @@ fun GameScreen(
                 )
             }
             var isLetterCorrect by rememberSaveable { mutableStateOf(false) }
+            Log.i("TST5", display.toString())
             Button(
                 onClick = {
                     if(letra.isNotEmpty()){
-//                        val newDisplay = display.toMutableList()
                         cleanChosenWord.forEachIndexed { index, c ->
                             if (c.isLetter()){
                                 if(letra.equals(c.toString(), ignoreCase = true)){
@@ -217,12 +226,16 @@ fun GameScreen(
                         }
                         displayViewWord = display.joinToString(" ")
                         if (!isLetterCorrect){
-                            count -= 1
+                            count--
                         }
                     }else{
                         isLetterEmpty = true
                     }
+                    if (!display.contains("-")){
+                        displayViewWord = chosenWord
+                    }
                     isLetterCorrect = false
+                    Log.i("TST4", display.toString())
                     Log.i("TST2", displayViewWord)
                 },
                 Modifier
