@@ -1,6 +1,5 @@
 package br.com.ads.jogoforca.ui.theme.screens
 
-import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -85,7 +84,7 @@ fun GameScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(8.dp)
                     ) {
-                        IconButton(onClick = { count++ }) {
+                        IconButton(onClick = {  }) {
                             Icon(Icons.Filled.Favorite,
                                 tint = Color.Red,
                                 contentDescription = "Vidas",
