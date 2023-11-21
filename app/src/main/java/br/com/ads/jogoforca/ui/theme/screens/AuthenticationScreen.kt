@@ -121,14 +121,12 @@ fun AuthenticationScreen(
             placeholder = {
                 Text(text = stringResource(id = R.string.passwordPlaceHolder))
             },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
         Button(
             onClick = {
                 if(user.isNotEmpty()){
                     onEnterClick(user)
-
                 }else{
                     isUserEmpty = true
                 }

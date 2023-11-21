@@ -1,10 +1,12 @@
 package br.com.ads.jogoforca.ui.theme.screens
 
 import android.util.Log
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +19,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
@@ -39,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -141,21 +146,24 @@ fun GameScreen(
                         .clip(CircleShape)
                 )
             }
-            val chosenWord = remember { tema.listaPalavras?.random().toString()}
+            val chosenWord = remember { tema.listaPalavras?.random().toString() }
             val cleanChosenWord = removeAccents(chosenWord)
             var displayViewWord by remember { mutableStateOf("") }
             var display = remember { ArrayList<String>() }
+            var displayWrongLetters = remember { ArrayList<String>() }
+            var displayViewWrongLetters by remember { mutableStateOf("") }
             var isFirstTime by remember { mutableStateOf(true) }
-
-            if (isFirstTime){
+            var isLetterCorrect by rememberSaveable { mutableStateOf(false) }
+            var isFinish by rememberSaveable { mutableStateOf(false) }
+            var isFinishWin by rememberSaveable { mutableStateOf(false) }
+            if (isFirstTime) {
                 cleanChosenWord.forEachIndexed { index, c ->
-                    if (c.isLetter()){
+                    if (c.isLetter()) {
                         display.add(index, "-")
-                    }else{
+                    } else {
                         display.add(index, " ")
                     }
                 }
-
                 displayViewWord = display.joinToString(" ")
                 isFirstTime = false
             }
@@ -167,7 +175,6 @@ fun GameScreen(
                 )
                 .fillMaxWidth()
 
-            Log.i("TST1", displayViewWord)
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -180,77 +187,111 @@ fun GameScreen(
             )
             var isLetterEmpty by rememberSaveable { mutableStateOf(false) }
             var letra by remember { mutableStateOf("") }
-            TextField(
-                value = letra,
-                onValueChange = {
-                    letra = it
-                },
-                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
-                modifier = fieldsModifier,
-                placeholder = {
-                    Text(text = stringResource(id = R.string.placeHolderLetter),
-                        modifier = Modifier
-                    )
-                },
-                trailingIcon = {
-                    if(isLetterEmpty){
-                        Icon(
-                            imageVector = Icons.Filled.Info,
-                            contentDescription = "Error",
-                            tint = MaterialTheme.colorScheme.error
+            if (!isFinish) {
+                TextField(
+                    value = letra,
+                    onValueChange = {
+                        letra = it
+                    },
+                    textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+                    modifier = fieldsModifier,
+                    placeholder = {
+                        Text(
+                            text = stringResource(id = R.string.placeHolderLetter),
+                            modifier = Modifier
                         )
-                    }
-                },
-                isError = isLetterEmpty
-            )
-            if(isLetterEmpty){
-                Text(
-                    text = "Digite uma letra",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
+                    },
+                    trailingIcon = {
+                        if (isLetterEmpty) {
+                            Icon(
+                                imageVector = Icons.Filled.Info,
+                                contentDescription = "Error",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    },
+                    isError = isLetterEmpty
                 )
-            }
-            var isLetterCorrect by rememberSaveable { mutableStateOf(false) }
-            Log.i("TST5", display.toString())
-            Button(
-                onClick = {
-                    if(letra.isNotEmpty()){
-                        cleanChosenWord.forEachIndexed { index, c ->
-                            if (c.isLetter()){
-                                if(letra.equals(c.toString(), ignoreCase = true)){
-                                    display.removeAt(index)
-                                    display.add(index, c.toString())
-                                    isLetterCorrect = true
+                if (isLetterEmpty) {
+                    Text(
+                        text = "Digite uma letra",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                if (displayWrongLetters.isNotEmpty()) {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        textAlign = TextAlign.Center,
+                        text = displayViewWrongLetters,
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+                Button(
+                    onClick = {
+                        if (letra.isNotEmpty()) {
+                            cleanChosenWord.forEachIndexed { index, c ->
+                                if (c.isLetter()) {
+                                    if (letra.equals(c.toString(), ignoreCase = true)) {
+                                        display.removeAt(index)
+                                        display.add(index, c.toString())
+                                        isLetterCorrect = true
+                                    }
                                 }
                             }
+                            displayViewWord = display.joinToString(" ")
+                            if (!isLetterCorrect) {
+                                count--
+                                if(!displayWrongLetters.contains(letra)){
+                                    displayWrongLetters.add(letra)
+                                }
+                                displayViewWrongLetters = displayWrongLetters.joinToString(" ")
+                                if (count == 0) {
+                                    isFinish = true
+                                }
+                            }
+                            if (!display.contains("-")) {
+                                displayViewWord = chosenWord
+                                isFinish = true
+                                isFinishWin = true
+                            }
+                        } else {
+                            isLetterEmpty = true
                         }
-                        displayViewWord = display.joinToString(" ")
-                        if (!isLetterCorrect){
-                            count--
+                        isLetterCorrect = false
+                    },
+                    Modifier
+                        .padding(
+                            top = 8.dp,
+                            start = 16.dp,
+                            end = 16.dp,
+                        )
+                        .fillMaxWidth(),
+                ) {
+                    Text(text = "Enter")
+                }
+            } else{
+                val scale by animateFloatAsState(targetValue = 10.5f)
+                Icon(
+                    imageVector = if(isFinishWin){Icons.Filled.Check }else{Icons.Filled.Clear},
+                    tint = if(isFinishWin){Color.Green}else{Color.Red},
+                    contentDescription = "Resultado",
+                    modifier = Modifier
+                        .scale(scale)
+                        .padding(top = 15.dp)
+                        .clickable {
+                            navController.popBackStack()
                         }
-                    }else{
-                        isLetterEmpty = true
-                    }
-                    if (!display.contains("-")){
-                        displayViewWord = chosenWord
-                    }
-                    isLetterCorrect = false
-                    Log.i("TST4", display.toString())
-                    Log.i("TST2", displayViewWord)
-                },
-                Modifier
-                    .padding(
-                        top = 8.dp,
-                        start = 16.dp,
-                        end = 16.dp,
-                    )
-                    .fillMaxWidth(),
-            ) {
-                Text(text = "Enter")
+                )
             }
         }
     }
 }
+
 
 fun removeAccents(input: String): String {
     val decomposed = Normalizer.normalize(input, Normalizer.Form.NFD)
