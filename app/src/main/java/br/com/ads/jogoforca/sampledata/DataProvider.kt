@@ -19,4 +19,14 @@ object DataProvider {
         tema5,
         tema6
     )
+
+    val vidas = arrayListOf(
+        R.drawable.forca0,
+        R.drawable.forca1,
+        R.drawable.forca2,
+        R.drawable.forca3,
+        R.drawable.forca4,
+        R.drawable.forca5,
+        R.drawable.forca6,
+    )
 }

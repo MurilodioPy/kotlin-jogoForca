@@ -1,6 +1,5 @@
 package br.com.ads.jogoforca.ui.theme.screens
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,7 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,6 +33,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -64,8 +63,9 @@ fun GameScreen(
     id : String,
     navController: NavHostController
 ) {
-    var count by remember { mutableStateOf(6) }
+    var count by remember { mutableIntStateOf(6)}
     val temas = DataProvider.temas
+    val vidas = remember { DataProvider.vidas }
     val tema = temas[id.toInt() - 1]
     Scaffold(
         topBar = {
@@ -84,19 +84,19 @@ fun GameScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(8.dp)
                     ) {
-                        IconButton(onClick = {  }) {
-                            Icon(Icons.Filled.Favorite,
-                                tint = Color.Red,
-                                contentDescription = "Vidas",
-                                modifier = Modifier
-                                    .size(40.dp)
-                            )
-                        }
-                        Text(
-                            text = count.toString(),
-                            fontSize = 25.sp,
-                            fontWeight = FontWeight.Bold,
-                        )
+//                        IconButton(onClick = {  }) {
+//                            Icon(Icons.Filled.Favorite,
+//                                tint = Color.Red,
+//                                contentDescription = "Vidas",
+//                                modifier = Modifier
+//                                    .size(40.dp)
+//                            )
+//                        }
+//                        Text(
+//                            text = count.toString(),
+//                            fontSize = 25.sp,
+//                            fontWeight = FontWeight.Bold,
+//                        )
                     }
                 },
                 navigationIcon = {
@@ -123,18 +123,18 @@ fun GameScreen(
             Box(
                 modifier = Modifier
                     .padding(
-                        vertical = 64.dp,
+                        vertical = 16.dp,
                         horizontal = 16.dp
                     )
                     .size(200.dp)
                     .background(
-                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.secondary,
                         shape = CircleShape,
                     )
             ) {
                 val borderWidth = 4.dp
                 Image(
-                    painter = painterResource(tema.imagem),
+                    painter = painterResource(vidas[count]),
                     contentDescription = "Imagem do tema",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -148,8 +148,8 @@ fun GameScreen(
             val chosenWord = remember { tema.listaPalavras?.random().toString() }
             val cleanChosenWord = removeAccents(chosenWord)
             var displayViewWord by remember { mutableStateOf("") }
-            var display = remember { ArrayList<String>() }
-            var displayWrongLetters = remember { ArrayList<String>() }
+            val display = remember { ArrayList<String>() }
+            val displayWrongLetters = remember { ArrayList<String>() }
             var displayViewWrongLetters by remember { mutableStateOf("") }
             var isFirstTime by remember { mutableStateOf(true) }
             var isLetterCorrect by rememberSaveable { mutableStateOf(false) }
@@ -177,7 +177,7 @@ fun GameScreen(
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp),
+                    .padding(16.dp),
                 textAlign = TextAlign.Center,
                 text = displayViewWord,
                 fontSize = 25.sp,
@@ -185,12 +185,15 @@ fun GameScreen(
                 color = MaterialTheme.colorScheme.onPrimary
             )
             var isLetterEmpty by rememberSaveable { mutableStateOf(false) }
-            var letra by remember { mutableStateOf("") }
+            var letraDigitada by remember { mutableStateOf("") }
+            val maxLength = 1
             if (!isFinish) {
                 TextField(
-                    value = letra,
+                    value = letraDigitada,
                     onValueChange = {
-                        letra = it
+                        if (it.length <= maxLength) {
+                            letraDigitada = it
+                        }
                     },
                     textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
                     modifier = fieldsModifier,
@@ -232,10 +235,10 @@ fun GameScreen(
                 }
                 Button(
                     onClick = {
-                        if (letra.isNotEmpty()) {
+                        if (letraDigitada.isNotEmpty()) {
                             cleanChosenWord.forEachIndexed { index, c ->
                                 if (c.isLetter()) {
-                                    if (letra.equals(c.toString(), ignoreCase = true)) {
+                                    if (letraDigitada.equals(c.toString(), ignoreCase = true)) {
                                         display.removeAt(index)
                                         display.add(index, c.toString())
                                         isLetterCorrect = true
@@ -245,8 +248,8 @@ fun GameScreen(
                             displayViewWord = display.joinToString(" ")
                             if (!isLetterCorrect) {
                                 count--
-                                if(!displayWrongLetters.contains(letra)){
-                                    displayWrongLetters.add(letra)
+                                if(!displayWrongLetters.contains(letraDigitada)){
+                                    displayWrongLetters.add(letraDigitada)
                                 }
                                 displayViewWrongLetters = displayWrongLetters.joinToString(" ")
                                 if (count == 0) {
@@ -262,6 +265,7 @@ fun GameScreen(
                             isLetterEmpty = true
                         }
                         isLetterCorrect = false
+                        letraDigitada = ""
                     },
                     Modifier
                         .padding(
@@ -274,13 +278,12 @@ fun GameScreen(
                     Text(text = "Enter")
                 }
             } else{
-                val scale by animateFloatAsState(targetValue = 10.5f)
                 Icon(
                     imageVector = if(isFinishWin){Icons.Filled.Check }else{Icons.Filled.Clear},
                     tint = if(isFinishWin){Color.Green}else{Color.Red},
                     contentDescription = "Resultado",
                     modifier = Modifier
-                        .scale(scale)
+                        .scale(10.5f)
                         .padding(top = 15.dp)
                         .clickable {
                             navController.popBackStack()

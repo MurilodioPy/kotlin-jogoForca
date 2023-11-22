@@ -37,12 +37,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import br.com.ads.jogoforca.model.Tema
 import br.com.ads.jogoforca.navigation.AppDestination
 import br.com.ads.jogoforca.sampledata.DataProvider.temas
+import br.com.ads.jogoforca.ui.theme.screens.ui.theme.JogoForcaTheme
 
 @Composable
 fun Texto(text : String){
@@ -61,8 +64,8 @@ fun TemaCard(tema: Tema, navController: NavHostController) {
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)
             .fillMaxWidth()
-            .clickable{
-                navController.navigate(AppDestination.Game.route+"/${tema.id}")
+            .clickable {
+                navController.navigate(AppDestination.Game.route + "/${tema.id}")
             }
         ,
         shape = RoundedCornerShape(corner = CornerSize(16.dp)),
@@ -163,5 +166,15 @@ fun TemasScreen(user: String, navController: NavHostController) {
                 }
             }
         }
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun TemasPreview() {
+    JogoForcaTheme {
+        val navController = rememberNavController()
+        TemasScreen(user = "Murilo", navController = navController)
     }
 }
