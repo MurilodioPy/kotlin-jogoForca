@@ -13,7 +13,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -88,13 +87,5 @@ fun MyApp(){
         composable(AppDestination.Profile.route) {
             ProfileScreen()
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview3() {
-    JogoForcaTheme {
-
     }
 }

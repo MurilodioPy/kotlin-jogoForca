@@ -54,7 +54,8 @@ fun Texto(text : String){
             .fillMaxWidth()
             .width(34.dp),
         textAlign = TextAlign.Center,
-        text = text
+        text = text,
+        color = MaterialTheme.colorScheme.onTertiary
     )
 }
 
@@ -119,6 +120,9 @@ private fun ImagemDoTema(tema : Tema) { //id da imagem do tema como argumento!
 @Composable
 fun TemasScreen(user: String, navController: NavHostController) {
     val temas = remember {temas}
+//    var textoEditText by remember { mutableStateOf("") }
+//    var isMenuOpen by rememberSaveable { mutableStateOf(false) }
+//    val menuOptions = listOf("Opção 1", "Opção 2", "Opção 3")
     Scaffold(
         topBar = {
             TopAppBar(
@@ -133,20 +137,43 @@ fun TemasScreen(user: String, navController: NavHostController) {
                 },
                 actions = {
                     IconButton(onClick = {
-                        TODO("IMPLEMENTAR AÇÃO MENU")
+//                        isMenuOpen = true
                     }) {
                         Icon(
                             imageVector = Icons.Filled.Menu,
                             contentDescription = "Menu"
                         )
                     }
+//                    DropdownMenu(
+//                        expanded = isMenuOpen,
+//                        onDismissRequest = { isMenuOpen = false },
+//                        modifier = Modifier
+//                            .background(
+//                                color = MaterialTheme.colorScheme.secondary
+//                            )
+//                    ) {
+//                        // Adiciona itens ao menu
+//                        menuOptions.forEach{option ->
+//                            DropdownMenuItem(
+//                                text = { option },
+//                                onClick = {
+//                                    textoEditText = option
+//                                    isMenuOpen = false
+//                                },
+//                               modifier = Modifier
+//                                   .background(
+//                                       color = MaterialTheme.colorScheme.onTertiary
+//                                   )
+//                                   .padding(6.dp))
+//                        }
+//                    }
                 },
             )
         },
         bottomBar = {
             BottomAppBar(
                 containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
+                contentColor = MaterialTheme.colorScheme.onTertiary,
             ) {
                 Texto(user.uppercase().split(" ").first() + " - ADS - IFTM - 2023")
             }

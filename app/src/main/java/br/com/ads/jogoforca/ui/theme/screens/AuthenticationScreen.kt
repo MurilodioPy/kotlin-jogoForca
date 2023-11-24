@@ -29,6 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -57,7 +58,12 @@ fun AuthenticationScreen(
                 )
                 .size(200.dp)
                 .background(
-                    MaterialTheme.colorScheme.primary,
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.secondary
+                        )
+                    ),
                     shape = CircleShape,
                 )
         ) {
@@ -67,7 +73,7 @@ fun AuthenticationScreen(
                     .padding(8.dp)
                     .align(Alignment.Center),
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = MaterialTheme.colorScheme.onTertiary,
                 fontSize = MaterialTheme.typography.titleLarge.fontSize
             )
         }

@@ -13,7 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -40,12 +41,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -128,8 +131,13 @@ fun GameScreen(
                     )
                     .size(200.dp)
                     .background(
-                        MaterialTheme.colorScheme.secondary,
-                        shape = CircleShape,
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.secondary
+                            )
+                        ),
+                        shape = RoundedCornerShape(32.dp),
                     )
             ) {
                 val borderWidth = 4.dp
@@ -139,10 +147,9 @@ fun GameScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .border(
-                            BorderStroke(borderWidth, MaterialTheme.colorScheme.primary),
-                            CircleShape
+                            BorderStroke(borderWidth, MaterialTheme.colorScheme.secondary),
+                            RoundedCornerShape(32.dp)
                         )
-                        .clip(CircleShape)
                 )
             }
             val chosenWord = remember { tema.listaPalavras?.random().toString() }
@@ -182,25 +189,29 @@ fun GameScreen(
                 text = displayViewWord,
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onTertiary
             )
             var isLetterEmpty by rememberSaveable { mutableStateOf(false) }
             var letraDigitada by remember { mutableStateOf("") }
             val maxLength = 1
             if (!isFinish) {
+                val regex = "[a-zA-Z]*".toRegex()
                 TextField(
                     value = letraDigitada,
                     onValueChange = {
-                        if (it.length <= maxLength) {
+                        if (it.length <= maxLength && it.matches(regex)) {
                             letraDigitada = it
                         }
                     },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    ),
                     textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
                     modifier = fieldsModifier,
                     placeholder = {
                         Text(
-                            text = stringResource(id = R.string.placeHolderLetter),
-                            modifier = Modifier
+                            text = stringResource(id = R.string.placeHolderLetter)
                         )
                     },
                     trailingIcon = {
@@ -275,7 +286,9 @@ fun GameScreen(
                         )
                         .fillMaxWidth(),
                 ) {
-                    Text(text = "Enter")
+                    Text(
+                        text = "Enter",
+                        color = MaterialTheme.colorScheme.onPrimary)
                 }
             } else{
                 Icon(
