@@ -3,7 +3,7 @@ package br.com.ads.jogoforca.ui.theme.screens.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val VioletIntense = Color(0xFF9747ff)
-val BlackBack = Color(0xFF222222)
+val BlackBack = Color(0xFF161b22)
 val Violet40 = Color(0xFF673AB7)
 
 val Violet = Color(0xFF9C27B0)

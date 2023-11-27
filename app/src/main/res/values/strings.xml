@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">JogoForca</string>
+    <string name="app_name">HangMan</string>
     <string name="title_activity_game">Game</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -50,4 +50,5 @@
     <string name="userPlaceHolder">User</string>
     <string name="passwordPlaceHolder">Password</string>
     <string name="placeHolderLetter">Digite uma letra</string>
+    <string name="title_activity_splash_screen">SplashScreenActivity</string>
 </resources>

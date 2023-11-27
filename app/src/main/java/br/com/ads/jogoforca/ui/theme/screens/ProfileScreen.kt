@@ -11,7 +11,7 @@ fun ProfileScreen(){
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview3() {
+fun ProfilePreview() {
     JogoForcaTheme {
 
     }

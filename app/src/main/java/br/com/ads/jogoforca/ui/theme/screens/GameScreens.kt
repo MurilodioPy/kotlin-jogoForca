@@ -7,7 +7,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -82,26 +81,6 @@ fun GameScreen(
                 title = {
                     Texto("Tema ${tema.nome}" )
                 },
-                actions = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(8.dp)
-                    ) {
-//                        IconButton(onClick = {  }) {
-//                            Icon(Icons.Filled.Favorite,
-//                                tint = Color.Red,
-//                                contentDescription = "Vidas",
-//                                modifier = Modifier
-//                                    .size(40.dp)
-//                            )
-//                        }
-//                        Text(
-//                            text = count.toString(),
-//                            fontSize = 25.sp,
-//                            fontWeight = FontWeight.Bold,
-//                        )
-                    }
-                },
                 navigationIcon = {
                     IconButton(onClick = {
                         navController.popBackStack()
@@ -140,14 +119,13 @@ fun GameScreen(
                         shape = RoundedCornerShape(32.dp),
                     )
             ) {
-                val borderWidth = 4.dp
                 Image(
                     painter = painterResource(vidas[count]),
                     contentDescription = "Imagem do tema",
                     modifier = Modifier
                         .fillMaxWidth()
                         .border(
-                            BorderStroke(borderWidth, MaterialTheme.colorScheme.secondary),
+                            BorderStroke(4.dp, MaterialTheme.colorScheme.secondary),
                             RoundedCornerShape(32.dp)
                         )
                 )
@@ -315,7 +293,7 @@ fun removeAccents(input: String): String {
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview2() {
+fun GamePreview() {
     JogoForcaTheme {
         val navController = rememberNavController()
         val tema = DataProvider.tema5

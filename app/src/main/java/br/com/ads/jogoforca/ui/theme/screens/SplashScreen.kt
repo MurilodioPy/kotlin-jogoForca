@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import br.com.ads.jogoforca.R
 import br.com.ads.jogoforca.ui.theme.screens.ui.theme.JogoForcaTheme
 
@@ -37,24 +37,23 @@ fun SplashScreen() {
     ) {
         Box(
             modifier = Modifier
-                .padding(
-                    vertical = 16.dp,
-                    horizontal = 16.dp
-                )
-                .size(150.dp)
+//                .padding(
+//                    vertical = 16.dp,
+//                    horizontal = 16.dp
+//                )
+                .size(120.dp)
                 .background(
-                    MaterialTheme.colorScheme.secondary,
+                    MaterialTheme.colorScheme.primary,
                     shape = CircleShape,
                 )
         ) {
-            val borderWidth = 4.dp
             Image(
-                painter = painterResource(R.drawable.carrasco),
+                painter = painterResource(R.drawable.ic_launcher_foreground),
                 contentDescription = "Imagem do tema",
                 modifier = Modifier
                     .fillMaxWidth()
                     .border(
-                        BorderStroke(borderWidth, MaterialTheme.colorScheme.primary),
+                        BorderStroke(4.dp, MaterialTheme.colorScheme.secondary),
                         CircleShape
                     )
                     .clip(CircleShape)
@@ -62,7 +61,9 @@ fun SplashScreen() {
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = "Bem-vindo ao Jogo da Forca",
-            style = MaterialTheme.typography.bodyLarge)
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 25.sp
+        )
     }
 }
 
